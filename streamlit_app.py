@@ -16,9 +16,14 @@ DEFAULT_PERSIST_DIR = str(REPO_DIR / "vector_db" / "chroma_qwen")
 
 def _get_secret(name: str) -> Optional[str]:
     # Streamlit Cloud secrets first, then env vars
-    if hasattr(st, "secrets") and name in st.secrets:
-        val = st.secrets.get(name)
-        return str(val) if val is not None else None
+    try:
+        # Accessing st.secrets may raise if no secrets.toml exists (common locally)
+        if hasattr(st, "secrets"):
+            val = st.secrets.get(name)
+            if val is not None:
+                return str(val)
+    except Exception:
+        pass
     return os.environ.get(name)
 
 
