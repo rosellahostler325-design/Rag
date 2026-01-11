@@ -16,3 +16,5 @@ openai>=1.0.0
 python-dotenv>=1.0.0
 pymupdf>=1.23.0
 
+# Required by langchain_community OpenAIEmbeddings for token counting/chunking
+tiktoken>=0.5.2
