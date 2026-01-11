@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 
 # 使用 dotenv 加载环境变量
 try:
@@ -24,7 +24,7 @@ except ImportError:
 
 # 使用 OpenAI 兼容的 Embedding（因为 SiliconFlow 兼容 OpenAI API）
 try:
-    from langchain_community.embeddings import OpenAIEmbeddings
+    from langchain_openai import OpenAIEmbeddings
 except ImportError:
     try:
         from langchain_openai import OpenAIEmbeddings
