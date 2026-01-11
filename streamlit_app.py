@@ -13,6 +13,14 @@ import rag_chain_qwen_improve_quality_of_rag as rag
 REPO_DIR = Path(__file__).resolve().parent
 DEFAULT_PERSIST_DIR = str(REPO_DIR / "vector_db" / "chroma_qwen")
 
+# Local dev convenience: load `.env` if present (Streamlit Cloud won't read your repo `.env`)
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(REPO_DIR / ".env", override=False)
+except Exception:
+    pass
+
 
 def _get_secret(name: str) -> Optional[str]:
     # Streamlit Cloud secrets first, then env vars
@@ -33,6 +41,7 @@ def _build_cfg(
     embedding_model: str,
     chat_model: str,
     persist_directory: str,
+    api_key_override: Optional[str],
     k: int,
     fetch_k: int,
     use_mmr: bool,
@@ -41,7 +50,7 @@ def _build_cfg(
     rewrite_query: bool,
     temperature: float,
 ) -> rag.Config:
-    api_key = _get_secret("SILICONFLOW_API_KEY") or _get_secret("OPENAI_API_KEY")
+    api_key = (api_key_override or "").strip() or _get_secret("SILICONFLOW_API_KEY") or _get_secret("OPENAI_API_KEY")
     return rag.Config(
         base_url=base_url,
         api_key=api_key,
@@ -74,6 +83,13 @@ def main() -> None:
 
     with st.sidebar:
         st.header("Settings")
+
+        api_key_override = st.text_input(
+            "SILICONFLOW_API_KEY (optional, for this session)",
+            value="",
+            type="password",
+            help="If set, this overrides Secrets/env for the current session only. On Streamlit Cloud, prefer using Secrets.",
+        )
 
         persist_directory = st.text_input("Chroma persist directory", value=DEFAULT_PERSIST_DIR)
 
@@ -108,6 +124,7 @@ def main() -> None:
             embedding_model=embedding_model,
             chat_model=chat_model,
             persist_directory=persist_directory,
+            api_key_override=api_key_override,
             k=k,
             fetch_k=fetch_k,
             use_mmr=use_mmr,
