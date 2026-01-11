@@ -25,6 +25,7 @@ import os
 import re
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable, List, Tuple
 
 from langchain_community.chat_models import ChatOpenAI
@@ -52,8 +53,8 @@ class Config:
     embedding_model: str = "Qwen/Qwen3-Embedding-4B"
     chat_model: str = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
 
-    # Vector DB
-    persist_directory: str = "/home/user/文档/RL4LLM/Rag_data/vector_db/chroma_qwen"
+    # Vector DB (repo-relative by default; works on Streamlit Cloud)
+    persist_directory: str = str(Path(__file__).resolve().parent / "vector_db" / "chroma_qwen")
 
     # Retrieval
     k: int = 3
